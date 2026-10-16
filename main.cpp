@@ -1,6 +1,3 @@
-#include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
 #include <opencv2/opencv.hpp>
 
 #include <cmath>
@@ -25,53 +22,28 @@ Mat sobel_filter(Mat& M)
 
     Mat output = cv::Mat::zeros(rows, cols, CV_8UC1);
 
+    // TODO: Fix outer pixels
     // Interior pixels only
     for(int i = 1; i < rows - 1; i++) {
-
-        const double* Mt = M.ptr<double>(i-1); // top
-        const double* Mi = M.ptr<double>(i);
-        const double* Mb = M.ptr<double>(i+1); // bottom
         for (int j = 1; j < cols - 1; j++) {
-            int gx = 0, gy = 0;
-            // std::cout << Mi[j] << " ";
+            double gx = 0, gy = 0;
 
-            gx += KX[0][0] * Mt[j-1];
-            gx += KX[0][1] * Mt[j];
-            gx += KX[0][2] * Mt[j+1];  
-            gx += KX[1][0] * Mi[j-1];
-            gx += KX[1][1] * Mi[j];
-            gx += KX[1][2] * Mi[j+1];  
-            gx += KX[2][0] * Mb[j-1];
-            gx += KX[2][1] * Mb[j];
-            gx += KX[2][2] * Mb[j+1];
-            
-            gy += KY[0][0] * Mt[j-1];
-            gy += KY[0][1] * Mt[j];
-            gy += KY[0][2] * Mt[j+1];  
-            gy += KY[1][0] * Mi[j-1];
-            gy += KY[1][1] * Mi[j];
-            gy += KY[1][2] * Mi[j+1];  
-            gy += KY[2][0] * Mb[j-1];
-            gy += KY[2][1] * Mb[j];
-            gy += KY[2][2] * Mb[j+1];   
+            for (int k = -1; k < 2; k++) {
+                const double* Mc = M.ptr<double>(i+k);
+                for (int l = -1; l < 2; l++) {
+                    gx += KX[k+1][l+1] * Mc[j+l];
+                    gy += KY[k+1][l+1] * Mc[j+l];
+                }
+            }
 
-            // for (int k = 0; k < 3; k++) {
-            //     for (int l = 0; l < 3; l++) {
-            //         gx += ;
-            //         gy += ;
-            //     }
-            // }
+            double gradient = std::sqrt(static_cast<float>(gx * gx + gy * gy));
 
-            int gradient = std::sqrt(static_cast<float>(gx * gx + gy * gy));
-
-            std::cout << gradient << " ";
+            // std::cout << gradient << " ";
 
             output.at<uchar>(i, j) = static_cast<uchar>(gradient);
         }
-
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
-
 
     return output;
 }
