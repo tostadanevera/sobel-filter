@@ -1,0 +1,14 @@
+# build
+*.o
+*.obj
+sobel_app
+sobel_bench
+
+# IDE
+.vscode/
+
+# Others
+media/*
+!media/sample.jpeg
+!media/sample_res.png
+*.pdf
