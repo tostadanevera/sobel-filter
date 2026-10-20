@@ -30,7 +30,7 @@ For each pixel, the gradient magnitude is computed as: `√(Gx² + Gy²)` (large
 All produce the same output, they differ only in structure.
 
 - **`v1`**: nested loops over the 3×3 kernel.
-- **`v2`**: unrolled kernels + cached row pointers + direct `outRow[col]` indexing.
+- **`v2`**: unrolled kernels + cached row pointers + direct `outRow[col]` indexing instead of `Mat::at`.
 - **`v3`**: separable, computes the 1D derivatives once and reuses the loaded pixels for both `Gx` and `Gy`, applying the `[1, 2, 1]` smoothing weights at the end. 
 
 All three use OpenMP to parallelize across rows and expose the same interface:
