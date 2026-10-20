@@ -38,7 +38,14 @@ All three use OpenMP to parallelize across rows and expose the same interface:
 ```cpp
 namespace sobel_vN {
     cv::Mat apply_sobel(const cv::Mat& input);
-    cv::Mat load_image(const std::string& path);
+}
+```
+
+Each version contains only the algorithm, the image loading is identical for all three versions, so it is implemented once in a shared module:
+
+```cpp
+namespace image_io {
+    cv::Mat load_grayscale(const std::string& path);
 }
 ```
 
@@ -46,11 +53,13 @@ namespace sobel_vN {
 
 ```
 .
+├── common/image_io.{h,cpp}  # shared loader
+├── media                    # sample input and output
 ├── v1/sobel_v1.{h,cpp}
 ├── v2/sobel_v2.{h,cpp}
 ├── v3/sobel_v3.{h,cpp}
-├── benchmark.cpp     # benchmark:  <input> [iterations]
-├── main.cpp          # main:       <input> <output>
+├── benchmark.cpp            # benchmark:  <input> [iterations]
+├── main.cpp                 # main:       <input> <output>
 ├── Makefile
 └── README.md
 ```
@@ -66,20 +75,12 @@ make            # builds sobel_main and sobel_bench
 make clean
 ```
 
-Manual:
-
-```bash
-g++ -O3 -fopenmp -std=c++17 \
-    benchmark.cpp v1/sobel_v1.cpp v2/sobel_v2.cpp v3/sobel_v3.cpp \
-    -o sobel_bench $(pkg-config --cflags --libs opencv4)
-```
-
 ## Usage
 
 ```bash
 # apply Sobel (uses v3) and save result
-./sobel_app photo.jpg edges.png
+./sobel_app sample.jpeg result.jpeg
 
 # benchmark all three versions (by default it is 10 iterations)
-./sobel_bench photo.jpeg 50
+./sobel_bench sample.jpeg 50
 ```

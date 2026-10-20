@@ -10,14 +10,14 @@
 
 namespace sobel_v1 {
 
-// Sobel kernel 3x3 horizontal
+// Sobel kernel 3x3, detects vertical edges
 constexpr int kernelX[3][3] = {
     {-1, 0, 1},    
     {-2, 0, 2},
     {-1, 0, 1},
 };
 
-// Sobel kernel 3x3 vertical
+// Sobel kernel 3x3, detects horizontal edges
 constexpr int kernelY[3][3] = {
     {-1, -2, -1},    
     { 0,  0,  0},
@@ -59,21 +59,6 @@ cv::Mat apply_sobel(const cv::Mat& input)
     }
 
     return output;
-}
-
-cv::Mat load_image(const std::string& imagePath)
-{
-    const cv::Mat colorImage = cv::imread(imagePath, cv::IMREAD_COLOR);
-    if (colorImage.empty()) {
-        return {};
-    }
-
-    cv::Mat grayImage;
-    cv::cvtColor(colorImage, grayImage, cv::COLOR_BGR2GRAY);
-
-    cv::Mat gray64f;
-    grayImage.convertTo(gray64f, CV_64F);
-    return gray64f;
 }
 
 } // namespace

@@ -75,19 +75,4 @@ cv::Mat apply_sobel(const cv::Mat& input)
     return output;
 }
 
-cv::Mat load_image(const std::string& imagePath)
-{
-    const cv::Mat colorImage = cv::imread(imagePath, cv::IMREAD_COLOR);
-    if (colorImage.empty()) {
-        return {};
-    }
-
-    cv::Mat grayImage;
-    cv::cvtColor(colorImage, grayImage, cv::COLOR_BGR2GRAY);
-
-    cv::Mat gray64f;
-    grayImage.convertTo(gray64f, CV_64F);
-    return gray64f;
-}
-
 } // namespace

@@ -1,3 +1,4 @@
+#include "./common/image_io.h"
 #include "./v1/sobel_v1.h"
 #include "./v2/sobel_v2.h"
 #include "./v3/sobel_v3.h"
@@ -17,7 +18,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    const cv::Mat img = sobel_v3::load_image(argv[1]);
+    const cv::Mat img = image_io::load_grayscale(argv[1]);
     if (img.empty()) {
         std::cerr << "Image could not be read\n";
         return 1;

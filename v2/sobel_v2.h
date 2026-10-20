@@ -4,5 +4,4 @@
 
 namespace sobel_v2 {
     cv::Mat apply_sobel(const cv::Mat& input);
-    cv::Mat load_image(const std::string& imagePath);
 }
