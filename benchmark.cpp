@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
+    // Optional argument, number of iterations
     int iterations = 10;
     if (argc == 3) {
         try {
@@ -38,6 +39,7 @@ int main(int argc, char** argv) {
         }
     }
 
+    // Times `iterations` calls and returns the average in ms per call
     auto bench = [&](auto fn) {
         fn(img);  // warmup
         const auto t0 = std::chrono::high_resolution_clock::now();

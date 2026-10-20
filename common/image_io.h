@@ -5,5 +5,6 @@
 namespace image_io {
     // Loads `path` as an 8-bit grayscale image and converts it to CV_64FC1
     // Returns an empty cv::Mat if the file cannot be read
+    // Shared by all versions
     cv::Mat load_grayscale(const std::string& path);
 }

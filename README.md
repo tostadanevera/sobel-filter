@@ -6,15 +6,15 @@ Three different implementations of the Sobel edge-detection filter, and a benchm
 
 The Sobel filter is an edge-detection operator used in image processing and computer vision. It works by calculating an approximation of the gradient of image intensity (areas where brightness changes sharply are identified as edges).
 
-It convolves the image with two 3×3 kernels:
+It convolves the image (A) with two 3×3 kernels:
 
 ```
-        Gx (vertical edges)          Gy (horizontal edges)
-        ┌─────────────┐              ┌─────────────┐
-        │ -1   0   1  │              │ -1  -2  -1  │
-        │ -2   0   2  │              │  0   0   0  │
-        │ -1   0   1  │              │  1   2   1  │
-        └─────────────┘              └─────────────┘
+           Kx (vertical edges)                      Ky (horizontal edges)
+            ┌─────────────┐                           ┌─────────────┐
+            │ -1   0   1  │                           │ -1  -2  -1  │
+    Gx =    │ -2   0   2  │    * A            Gy =    │  0   0   0  │    * A
+            │ -1   0   1  │                           │  1   2   1  │
+            └─────────────┘                           └─────────────┘
 ```
 
 For each pixel, the gradient magnitude is computed as: `√(Gx² + Gy²)` (large magnitude = strong edge, small magnitude = flat region).
@@ -30,7 +30,7 @@ For each pixel, the gradient magnitude is computed as: `√(Gx² + Gy²)` (large
 All produce the same output, they differ only in structure.
 
 - **`v1`**: nested loops over the 3×3 kernel.
-- **`v2`**: unrolled kernels + cached row pointers + direct `outRow[col]` indexing instead of `Mat::at`.
+- **`v2`**: unrolled kernels + cached row pointers + direct `outRow[col]` indexing.
 - **`v3`**: separable, computes the 1D derivatives once and reuses the loaded pixels for both `Gx` and `Gy`, applying the `[1, 2, 1]` smoothing weights at the end. 
 
 All three use OpenMP to parallelize across rows and expose the same interface:

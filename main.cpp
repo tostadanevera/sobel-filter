@@ -19,6 +19,7 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    // Version 3 is applied, as it is the most optimized one
     const cv::Mat res = sobel_v3::apply_sobel(img);
 
     if (!cv::imwrite(outputPath, res)) {

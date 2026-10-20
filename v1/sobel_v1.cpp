@@ -34,16 +34,20 @@ cv::Mat apply_sobel(const cv::Mat& input)
 
     cv::Mat output = cv::Mat::zeros(rows, cols, CV_8UC1);
 
+    // Parallelize over rows
     #pragma omp parallel for default(none) shared(input, output, rows, cols, kernelX, kernelY) schedule(static)
     for(int row = 0; row < rows; ++row) {
         for (int col = 0; col < cols; ++col) {
             double gradientX = 0.0, gradientY = 0.0;
 
+            // Convolve the 3x3 neighbours with both kernels
             for (int kernelRow = -1; kernelRow <= 1; ++kernelRow) {
+                // Border pixels, replicate the nearest valid row
                 const int sampleRow = std::clamp(row + kernelRow, 0, rows - 1);
                 const double* inputRowPtr = input.ptr<double>(sampleRow);
 
                 for (int kernelCol = -1; kernelCol <= 1; ++kernelCol) {
+                    // Border pixels, replicate the nearest valid column
                     const int sampleCol = std::clamp(col + kernelCol, 0, cols - 1);
 
                     gradientX += kernelX[kernelRow + 1][kernelCol+1] * inputRowPtr[sampleCol];
@@ -53,8 +57,7 @@ cv::Mat apply_sobel(const cv::Mat& input)
 
             const double gradient = std::sqrt(gradientX * gradientX + gradientY * gradientY);
 
-            output.at<uchar>(row, col) = 
-                cv::saturate_cast<uchar>(gradient);
+            output.at<uchar>(row, col) = cv::saturate_cast<uchar>(gradient); // Rounds, magnitude can exceed 255
         }
     }
 

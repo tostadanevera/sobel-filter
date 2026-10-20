@@ -1,7 +1,7 @@
 # build
 *.o
 *.obj
-sobel_app
+sobel_main
 sobel_bench
 
 # IDE

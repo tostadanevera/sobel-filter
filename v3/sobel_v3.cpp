@@ -10,19 +10,8 @@
 
 namespace sobel_v3 {
 
-// Sobel kernel 3x3 horizontal
-constexpr int kernelX[3][3] = {
-    {-1, 0, 1},    
-    {-2, 0, 2},
-    {-1, 0, 1},
-};
-
-// Sobel kernel 3x3 vertical
-constexpr int kernelY[3][3] = {
-    {-1, -2, -1},    
-    { 0,  0,  0},
-    { 1,  2,  1},
-};
+// No 2D kernels, the Sobel kernels are separable
+// Instead applies the 1D derivative [-1, 0, 1] and the 1D smoothing [1, 2, 1]
 
 cv::Mat apply_sobel(const cv::Mat& input) 
 {
@@ -34,9 +23,11 @@ cv::Mat apply_sobel(const cv::Mat& input)
 
     cv::Mat output = cv::Mat::zeros(rows, cols, CV_8UC1);
 
+    // Parallelize over rows
     #pragma omp parallel for default(none) shared(input, output, rows, cols) schedule(static)
     for (int row = 0; row < rows; ++row) {
         
+        // Border pixels, replicate the nearest valid row
         const int rowM1 = std::clamp(row - 1, 0, rows - 1);
         const int rowP1 = std::clamp(row + 1, 0, rows - 1);
 
@@ -47,6 +38,7 @@ cv::Mat apply_sobel(const cv::Mat& input)
         uchar* outRow = output.ptr<uchar>(row);
 
         for (int col = 0; col < cols; ++col) {
+            // Border pixels, replicate the nearest valid column
             const int colM1 = std::clamp(col - 1, 0, cols - 1);
             const int colP1 = std::clamp(col + 1, 0, cols - 1);
 
@@ -68,7 +60,7 @@ cv::Mat apply_sobel(const cv::Mat& input)
             const double gradientY = dyLeft * 1.0 + dyMid * 2.0 + dyRight * 1.0;
 
             const double gradient = std::sqrt(gradientX * gradientX + gradientY * gradientY);
-            outRow[col] = cv::saturate_cast<uchar>(gradient);
+            outRow[col] = cv::saturate_cast<uchar>(gradient); // Rounds, magnitude can exceed 255
         }
     }
 
